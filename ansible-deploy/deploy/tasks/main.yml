@@ -1,0 +1,10 @@
+---
+
+- name: Copy Docker Compose YAML file
+  copy:
+    src: ansible/deploy/files/docker-compose.yml
+    dest: /home/user/app/
+  
+- name: Start Containers
+  become: true
+  command: docker-compose -f /home/user/app/docker-compose.yml up -d

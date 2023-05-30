@@ -1,0 +1,23 @@
+---
+# - hosts: hypervisor
+#   become: true
+#   roles:
+#     - vm-scratch
+# It better ro use terraform for this purpose
+
+- hosts: all
+  become: true
+  roles:
+    - initiate-vm
+
+- hosts: all
+  become: true
+  roles:
+    - docker
+
+
+- hosts: all
+  become: true
+  gather_facts: False
+  roles:
+    - docker-compose

@@ -1,0 +1,26 @@
+---
+
+- name: Create VM disk
+  command: qemu-img create -f qcow2 /var/lib/libvirt/images/{{ vm_name }}.qcow2 {{ vm_disk_size }}
+  register: create_disk_result
+  changed_when: create_disk_result.stdout != ""
+
+- name: Create VM definition
+  virt:
+    name: "{{ vm_name }}"
+    memory: "{{ vm_memory }}"
+    vcpus: "{{ vm_cpus }}"
+    disks:
+      - file: /var/lib/libvirt/images/{{ vm_name }}.qcow2
+    os_type: linux
+    network:
+      - type: network
+        source: default
+  register: create_vm_result
+  when: create_disk_result.changed
+
+- name: Boot VM
+  virt:
+    name: "{{ vm_name }}"
+    state: running
+  when: create_vm_result.changed

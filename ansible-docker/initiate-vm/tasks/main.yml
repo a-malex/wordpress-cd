@@ -1,0 +1,28 @@
+---
+
+- name: Check SSH port
+  shell: "grep '^Port ' /etc/ssh/sshd_config | awk '{print $2}'"
+  register: ssh_port_check
+
+- name: Change SSH port to 8822
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?Port .*'
+    line: 'Port 8822'
+    backup: yes
+  when: ssh_port_check.stdout == '22'
+  notify: Restart SSH
+
+- name: Disable swap
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: masked
+  with_items:
+    - 'swap.target'
+    - 'var-swap.mount'
+  when: ansible_facts['ansible_swaptotal_mb'] != 0
+
+- name: Set hostname to {{ DockerHost }}
+  hostname:
+    name: "{{ DockerHost }}"

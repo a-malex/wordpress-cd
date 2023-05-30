@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Execute Ansible Adhoc Command') {
             steps {
-                dir("ansible/") {
+                dir("ansible-docker/") {
                     sh '''
                         ansible all -i hosts.ini -b -m raw -a "apt install python3 /" 
                     '''
